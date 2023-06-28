@@ -16,7 +16,7 @@ library(rgeos)
 
 theme_set(theme_bw())
 
-latest.yr <- 2019
+latest.yr <- 2022
 
 
   cnt.nms <- data.frame(sht.nm = c("all.cnt","HS","AS","AU","BZ","CA","CN","CK","EC","SV","EU","FM","FJ","GU","ID","JP","KI","KR","MH","NR","NC","NZ","NU",
@@ -41,7 +41,6 @@ latest.yr <- 2019
                               flag = ifelse(flag %in% c("ES","PT"), "EU", flag))
 
 
-  
   mapdat <- read.table(file="./Data/AGGREGATE_RAISED_5X5_S-L-P-T-Z.TXT", header = TRUE, sep = ",")
   
   world <- ne_countries(scale = "medium", returnclass = "sf")
