@@ -47,11 +47,6 @@ latest.yr <- 2022
   
   mappl <- mapdat %>% mutate(tot_mt = alb_mt + bet_mt + skj_mt + yft_mt) %>% group_by(lond, latd) %>% summarise(Catch = sum(tot_mt))
   
-  #cnt.keep <- read.csv(file="./EEZs/Data/PacCountries.csv", header=TRUE)
-  
-  # eez <- st_read("./EEZs/Data/World_EEZ_Files/World_EEZ_v10_2018_0_360.shp")
-  # 
-  # pac.eez <- eez[eez$Territory1 %in% cnt.keep$Ctry,]
   
 #____________________________________________________________________________________________________________
 # User interface
@@ -206,11 +201,6 @@ server <- function(input, output) {
   
   output$TotCatch <- renderPlot({
     
-    # if(length(unique(plot.dat()[[1]])) > 1){
-    #   cnt.cols <- c("slategray4", "steelblue3")
-    # } else{
-    #   cnt.cols <- c("slategray4")
-    # }
     cnt.cols <- c("slategray4", "magenta2")
     
     mu.catch <- plot.dat()[[1]] %>% filter(Year >= input$sliderrng[1], Year <= input$sliderrng[2]) %>% summarise(Catch = sum(Catch))
@@ -232,16 +222,6 @@ server <- function(input, output) {
     
     print(pl1)
     
-    # pl.cols <- gr.cols$grcols[match(unique(plot.dat()[[2]]$Gear),gr.cols$sht.nm)]
-    # 
-    # pl2 <- ggplot(plot.dat()[[2]], aes(x = "", y = Catch, fill = Gear)) +
-    #               geom_bar(width = 1, stat = "identity", color = "white") +
-    #               coord_polar("y", start = 0) +
-    #               #geom_text(aes(y = lab.ypos, label = prop), color = "white")+
-    #               scale_fill_manual(values = pl.cols) +
-    #               theme_void()
-    # 
-    # grid.arrange(pl1, pl2, ncol = 2, widths = c(3,1))
     
   })
   
@@ -262,18 +242,6 @@ server <- function(input, output) {
     
     print(pl1)
     
-    # cnt.cols <- c("slategray4", "steelblue3")
-    # 
-    # pl2 <- ggplot(plot.dat()[[4]], aes(x = "", y = Catch, fill = Category)) +
-    #               geom_bar(width = 1, stat = "identity", color = "white") +
-    #               coord_polar("y", start = 0) +
-    #               scale_fill_manual(values = cnt.cols) +
-    #               geom_text(aes(y = Catch, label = round(CatP*100, 1)), color = "black", size = 9)+
-    #               #scale_fill_manual(values = mycols) +
-    #               theme_void() +
-    #               theme(legend.title = element_blank())
-    # 
-    # grid.arrange(pl1, pl2, ncol = 2, widths = c(3,1))
     
   })
   
@@ -281,15 +249,10 @@ server <- function(input, output) {
     
     tmpdat <- plot.dat()[[2]]
     
-    # tmpdat <- acedat %>% filter(gear %in% c(input$grs)) %>% group_by(gear) %>% summarise(tmp = sum(tot_mt))
-    # 
-    # if(is.null(input$grs)) tmpdat = data.frame(a = 0, b = 1)
-    
     head(tmpdat)
 
     
   })
-  
   
   
   #____________________________________________________________________________________________________________
@@ -333,7 +296,6 @@ server <- function(input, output) {
     
     regmap <- ggplot() +
       geom_sf(data = world,
-              #color = "black",
               fill = "wheat") +
       coord_sf(
         xlim = c(100, 245),
@@ -355,7 +317,6 @@ server <- function(input, output) {
     mappl <- map.dat()[[1]]
     pl <- map.dat()[[3]] + geom_point(data = mappl, aes(x = lond, y = latd, size = Catch/1000), colour = alpha("dodgerblue", .7)) + scale_size(range = c(0, 20)) +
                            annotate("text", x = 240, y = 52, label = "Catch - all species (1,000's mt)", hjust = 1, size = 12, colour = grey(0.6))
-          #geom_sf(data = pac.eez, fill = alpha("blue", 0.1)) + coord_sf(xlim = c(100, 245), ylim = c(-50, 55), expand = FALSE)
     
     if(input$sum.type == "flag" & input$country != "all.cnt") pl <- pl + geom_point(data = map.dat()[[2]], aes(x = lond, y = latd, size = Catch/1000), shape = 1, colour = alpha("magenta", .99))
     
@@ -404,26 +365,12 @@ server <- function(input, output) {
     
     grid.newpage()
     grid.arrange(pl.skj, pl.yft, pl.bet, pl.alb, layout_matrix=lay.mat, nrow=2)
-    #pl.alb
+    
     
     }, height = 1000, width = 1200)
   
   
-  # pl.cols <- gr.cols$grcols[match(unique(plot.dat()[[2]]$Gear),gr.cols$sht.nm)]
-  # 
-  # pl2 <- ggplot(plot.dat()[[2]], aes(x = "", y = Catch, fill = Gear)) +
-  #               geom_bar(width = 1, stat = "identity", color = "white") +
-  #               coord_polar("y", start = 0) +
-  #               #geom_text(aes(y = lab.ypos, label = prop), color = "white")+
-  #               scale_fill_manual(values = pl.cols) +
-  #               theme_void()
-  # 
-  # grid.arrange(pl1, pl2, ncol = 2, widths = c(3,1))
-  
   output$Gear.pie <- renderPlotly({
-    
-    # if(dim(plot.dat()[[4]])[1] == 1) cnt.cols <- c("#6C7B8B")
-    # if(dim(plot.dat()[[4]])[1] == 2) cnt.cols <- c("#6C7B8B","#EE00EE")   # These are the hexadecimals for slategray4 and magenta2 from gplots::col2hex()
     
     plot_ly(plot.dat()[[2]], labels=~Gear, values=~round(CatP), type = "pie", #marker = list(colors = cnt.cols), sort = FALSE,
             textposition = "ouside", textinfo = "label+value", width = 400, height = 400) %>% config(displayModeBar = FALSE) %>%
@@ -432,10 +379,6 @@ server <- function(input, output) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
     
   })
-  
-  
-  
-  
   
   
   output$Country.pie <- renderPlotly({
