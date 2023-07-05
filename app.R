@@ -11,7 +11,6 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(plotly)
 library(sf)
-library(rgeos)
 
 
 theme_set(theme_bw())
